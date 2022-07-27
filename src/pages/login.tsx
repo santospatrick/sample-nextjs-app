@@ -26,7 +26,11 @@ function Login() {
         <Box mb={10} display="flex" justifyContent="center">
           <Image src={logo} alt="Logoipsum" />
         </Box>
-        <LoginForm ref={ref} onSubmit={onSubmit} />
+        <LoginForm
+          ref={ref}
+          onSubmit={onSubmit}
+          defaultValues={{ email: "github@email.com", password: "password" }}
+        />
       </Box>
     </Container>
   );

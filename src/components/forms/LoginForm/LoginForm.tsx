@@ -17,6 +17,7 @@ export type FormValues = {
 
 type Props = {
   onSubmit: SubmitHandler<FormValues>;
+  defaultValues?: Partial<FormValues>;
 };
 
 export type LoginFormRefType = {
@@ -24,7 +25,7 @@ export type LoginFormRefType = {
 };
 
 const LoginForm: ForwardRefRenderFunction<LoginFormRefType, Props> = (
-  { onSubmit },
+  { onSubmit, defaultValues },
   ref
 ) => {
   const {
@@ -37,6 +38,7 @@ const LoginForm: ForwardRefRenderFunction<LoginFormRefType, Props> = (
     defaultValues: {
       email: "",
       password: "",
+      ...defaultValues,
     },
   });
 
