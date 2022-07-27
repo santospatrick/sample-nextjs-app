@@ -1,4 +1,4 @@
-# `santospatrick/nextjs-boilerplate-advanced`
+# sample-nextjs-app
 > Next.js boilerplate made with Chakra-UI + Typescript + React-table + React-hook-form
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/0e6e63e0-f1fe-44f0-baf2-253db63e4d79/deploy-status)](https://app.netlify.com/sites/magnificent-sfogliatella-ad53dd/deploys)
