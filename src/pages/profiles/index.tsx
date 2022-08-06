@@ -1,12 +1,16 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
 import DataTable from "@/components/DataTable";
+import ProfileFilterForm from "@/components/forms/ProfileFilterForm";
+import { FormValues } from "@/components/forms/ProfileFilterForm/ProfileFilterForm";
+import ModalFullscreen from "@/components/ModalFullscreen";
 import PrivatePage from "@/layouts/PrivatePage";
 import api from "@/services/api";
-import { Container, HStack, IconButton } from "@chakra-ui/react";
+import { Container, HStack, IconButton, useBoolean } from "@chakra-ui/react";
 import { format, parseISO } from "date-fns";
 import localePt from "date-fns/locale/pt-BR";
 import Link from "next/link";
 import React, { ReactElement, useMemo, useState } from "react";
+import { SubmitHandler } from "react-hook-form";
 import { MdArrowRightAlt, MdDelete } from "react-icons/md";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
@@ -14,11 +18,18 @@ import { NextPageWithLayout } from "../_app";
 
 type Props = unknown;
 
+type Filters = {
+  name: string;
+};
+
 const perPage = 5;
 
 const Profiles: NextPageWithLayout<Props> = () => {
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const [idToDelete, setIdToDelete] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Partial<Filters>>({});
+  const [isFiltersOpen, { on, off }] = useBoolean();
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading: isLoadingDeletion } = useMutation(() =>
     api.delete(`profiles/${idToDelete}`)
@@ -28,13 +39,14 @@ const Profiles: NextPageWithLayout<Props> = () => {
     data: profiles,
     isLoading,
     error,
-  } = useQuery(["profiles", page], () =>
+  } = useQuery(["profiles", page, searchTerm, filters], () =>
     api
       .get("profiles", {
         params: {
           page,
           perPage,
           status: true,
+          name: searchTerm || filters?.name,
         },
       })
       .then((response) => response.data)
@@ -91,6 +103,12 @@ const Profiles: NextPageWithLayout<Props> = () => {
     }
   };
 
+  const onSubmitFilters: SubmitHandler<FormValues> = (values) => {
+    setFilters(values);
+    off();
+    setPage(1);
+  };
+
   if (error) {
     return <div>An error has ocurred: {error}</div>;
   }
@@ -103,6 +121,9 @@ const Profiles: NextPageWithLayout<Props> = () => {
         isLoading={isLoadingDeletion}
         onConfirm={onConfirmDelete}
       />
+      <ModalFullscreen isOpen={isFiltersOpen} onClose={off}>
+        <ProfileFilterForm onSubmit={onSubmitFilters} defaultValues={filters} />
+      </ModalFullscreen>
       <DataTable
         columns={columns}
         data={profiles?.data}
@@ -113,6 +134,10 @@ const Profiles: NextPageWithLayout<Props> = () => {
           setPage(nextPage);
         }}
         isLoading={isLoading}
+        onSearchDebounced={(searchText) => {
+          setSearchTerm(searchText);
+        }}
+        onClickFilter={on}
       />
     </Container>
   );
