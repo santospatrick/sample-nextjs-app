@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 type Props = unknown;
 
 const NewProfile = (_props: Props) => {
-  const formRef = useRef<UserProfileFormRef>();
+  const formRef = useRef<UserProfileFormRef>(null);
 
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
     try {
@@ -25,7 +25,7 @@ const NewProfile = (_props: Props) => {
 
   return (
     <Container maxW="600px" m="auto" py={10}>
-      <UserProfileForm onSubmit={onSubmit} />
+      <UserProfileForm ref={formRef} onSubmit={onSubmit} />
     </Container>
   );
 };
